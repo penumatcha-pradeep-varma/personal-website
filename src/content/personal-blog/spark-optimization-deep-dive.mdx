@@ -1,0 +1,105 @@
+---
+title: "Spark Performance Optimization: What Actually Works at Multi-TB Scale"
+description: "Hard-won lessons from tuning PySpark jobs at JPMorgan Chase — partitioning strategies, broadcast joins, shuffle reduction, and the metrics that matter."
+pubDate: 2026-04-10
+tags: ["Spark", "PySpark", "Performance", "AWS EMR", "Data Engineering"]
+---
+
+After years of tuning Spark jobs processing multi-terabyte daily datasets at JPMorgan Chase, I've learned that most performance advice on the internet is either too generic or targets toy datasets. Here's what actually moves the needle at scale.
+
+## The Three Levers That Matter Most
+
+Spark performance almost always comes down to three things: **partitioning**, **shuffle minimization**, and **memory management**. Everything else is secondary.
+
+### 1. Partition Strategy First, Not Last
+
+The most common mistake I see is treating partitioning as an afterthought. Your partition count should be determined by your data volume and cluster, not left at the default 200.
+
+```python
+# Bad: default 200 partitions for a 500GB dataset
+df = spark.read.parquet("s3://bucket/large-table/")
+
+# Good: calculate target partition size (aim for ~128MB per partition)
+target_partition_size_mb = 128
+dataset_size_gb = 500
+num_partitions = int((dataset_size_gb * 1024) / target_partition_size_mb)
+
+df = spark.read.parquet("s3://bucket/large-table/") \
+    .repartition(num_partitions, "partition_key")
+```
+
+**Key rule**: repartition on the key you'll join or aggregate on. This collocates related data on the same executor and eliminates shuffle during the downstream operation.
+
+### 2. Broadcast Joins Are Not Optional for Small Tables
+
+If one side of a join is under ~200MB (tunable via `spark.sql.autoBroadcastJoinThreshold`), broadcast it. Always.
+
+```python
+from pyspark.sql.functions import broadcast
+
+# Force broadcast for a known-small dimension table
+result = large_fact_table.join(
+    broadcast(small_dim_table),
+    on="customer_id",
+    how="left"
+)
+```
+
+At JPMC, I've seen single broadcast join changes cut job runtimes by 40–60% on jobs joining large transaction tables with relatively small lookup tables.
+
+### 3. Shuffle Reduction via Partition Pruning
+
+Every shuffle is expensive. The goal is to push predicates down so Spark reads less data before the shuffle, not more.
+
+```python
+# Ensure predicates are on partition columns
+df = spark.read.parquet("s3://bucket/transactions/") \
+    .filter("event_date >= '2026-01-01'")  # Only if event_date is a partition column
+```
+
+Check your query plan with `df.explain(extended=True)` to verify partition pruning is happening. If you see `FileScan` without `PartitionFilters`, you're reading more than you need to.
+
+## What I Monitor in Production
+
+These are the Spark UI metrics I check for every job before declaring it tuned:
+
+| Metric | What to Look For |
+|---|---|
+| **Shuffle Read/Write** | High shuffle = repartition earlier |
+| **GC Time %** | > 10% = memory pressure, increase executor memory |
+| **Task Duration Variance** | High variance = data skew |
+| **Spill (Memory/Disk)** | Any spill = increase `spark.executor.memory` or reduce partition size |
+
+## The Skew Problem
+
+Data skew is the silent killer. A single hot partition holding 80% of your data means 80% of your cluster sits idle while one executor grinds.
+
+```python
+# Diagnose skew
+df.groupBy("customer_id").count().orderBy("count", ascending=False).show(10)
+
+# Fix with salting for skewed joins
+from pyspark.sql.functions import concat, lit, floor, rand
+
+salt_factor = 10
+
+# Add salt to the large table
+large = large_table.withColumn(
+    "salted_key",
+    concat(col("join_key"), lit("_"), (floor(rand() * salt_factor)).cast("string"))
+)
+
+# Explode the small table to match all salts
+small = small_table.withColumn("salt", explode(array([lit(i) for i in range(salt_factor)]))) \
+    .withColumn("salted_key", concat(col("join_key"), lit("_"), col("salt").cast("string")))
+
+result = large.join(small, on="salted_key", how="left")
+```
+
+Salting is ugly but it works. I've used it on customer tables where a small number of accounts have millions of transactions.
+
+## Closing Thoughts
+
+Spark optimization is empirical. Measure with `spark.eventLog.enabled=true`, examine the Spark UI, identify the bottleneck, fix it, measure again. There's no shortcut — but once you develop the pattern recognition for what a skewed task distribution looks like vs. memory pressure vs. shuffle overhead, you get fast.
+
+The tools are in the Spark UI. Most engineers don't use it enough.

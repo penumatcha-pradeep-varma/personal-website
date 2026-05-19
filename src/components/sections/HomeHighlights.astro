@@ -1,0 +1,54 @@
+---
+import { highlights } from '@/data/index';
+---
+
+<!-- Expertise highlights -->
+<section class="py-24 px-6 max-w-7xl mx-auto">
+  <div class="text-center mb-14" data-speed="0.95">
+    <p class="section-label mb-3">What I Build</p>
+    <h2 class="section-title">Core Expertise</h2>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    {
+      highlights.map((h, i) => (
+        <div
+          class="card p-7 hover:border-primary/30 transition-colors duration-300"
+          data-highlight
+          style={`animation-delay: ${i * 0.1}s`}
+        >
+          <div class="text-3xl mb-4">{h.icon}</div>
+          <h3 class="font-display font-semibold text-xl text-light mb-3">{h.title}</h3>
+          <p class="text-muted text-sm leading-relaxed mb-5">{h.desc}</p>
+          <div class="flex flex-wrap gap-2">
+            {h.tags.map((tag) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="text-center mt-14">
+    <a href="#experience" class="btn-outline">
+      Full Experience →
+    </a>
+  </div>
+</section>
+
+<script>
+  import { gsap, ScrollTrigger } from '@/lib/gsap';
+
+  gsap.from('[data-highlight]', {
+    y: 40,
+    opacity: 0,
+    duration: 0.7,
+    stagger: 0.12,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: '[data-highlight]',
+      start: 'top 80%',
+    },
+  });
+</script>

@@ -1,0 +1,123 @@
+---
+import postsRaw from '@/data/posts.json';
+const preview = [...postsRaw]
+  .sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf())
+  .slice(0, 3);
+---
+
+<section id="blogs" class="py-24 px-6">
+  <div class="max-w-5xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-14">
+      <div>
+        <p class="font-mono text-xs tracking-widest uppercase mb-3" style="color: #7c3aed; letter-spacing: 0.12em;">Adventures & Stories</p>
+        <h2 class="section-title text-4xl md:text-5xl">Blogs</h2>
+        <p class="text-muted mt-3 text-sm max-w-md">
+          Life beyond the terminal — bike trips, travel diaries, and stories from the road.
+        </p>
+      </div>
+      <a
+        href="/blogs"
+        class="self-start font-mono text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200"
+        style="color: #7c3aed; border: 1px solid #7c3aed40; background: #7c3aed0d;"
+        onmouseover="this.style.borderColor='#7c3aed'; this.style.background='#7c3aed1a';"
+        onmouseout="this.style.borderColor='#7c3aed40'; this.style.background='#7c3aed0d';"
+      >
+        View All Stories →
+      </a>
+    </div>
+
+    <!-- Cards: first 2 visible immediately, 3rd reveals on scroll -->
+    <div class="grid md:grid-cols-3 gap-6">
+      {preview.map((post, i) => (
+        <a
+          href={`/blogs/${post.slug}`}
+          class="block group"
+          data-blog-card
+          data-index={i}
+        >
+          <article
+            class="flex flex-col h-full rounded-2xl overflow-hidden border border-dark-border bg-dark-surface/40 hover:border-accent/30 transition-all duration-300 hover:-translate-y-1"
+          >
+            <!-- Image: auto-scaled, any aspect ratio -->
+            {post.heroImage ? (
+              <div class="overflow-hidden" style="aspect-ratio: 4/3; background: #0a0a0f;">
+                <img
+                  src={`/images/${post.heroImage}`}
+                  alt={post.title}
+                  class="w-full h-full group-hover:scale-105 transition-transform duration-500"
+                  style="object-fit: cover; object-position: center;"
+                />
+              </div>
+            ) : (
+              <div class="flex items-center justify-center text-4xl" style="aspect-ratio: 4/3; background: linear-gradient(135deg, #7c3aed22, #0f0f1a);">
+                🏍️
+              </div>
+            )}
+
+            <!-- Content -->
+            <div class="flex flex-col flex-1 p-5">
+              {post.location && (
+                <p class="font-mono text-xs mb-2" style="color: #7c3aed;">📍 {post.location}</p>
+              )}
+              <h3 class="font-display font-semibold text-base text-light mb-2 leading-snug group-hover:text-accent transition-colors line-clamp-2">
+                {post.title}
+              </h3>
+              <p class="text-muted text-sm leading-relaxed line-clamp-2 flex-1 mb-4">
+                {post.description}
+              </p>
+              <div class="flex items-center justify-between mt-auto">
+                <div class="flex gap-1.5">
+                  {post.tags.slice(0, 1).map((tag) => (
+                    <span class="font-mono text-xs px-2 py-0.5 rounded-full border" style="color: #7c3aed; border-color: #7c3aed40; background: #7c3aed0d;">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <span class="text-xs font-mono text-accent group-hover:translate-x-1 transition-transform">Read →</span>
+              </div>
+            </div>
+          </article>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap, ScrollTrigger } from '@/lib/gsap';
+
+  const cards = document.querySelectorAll('[data-blog-card]');
+  const first2 = Array.from(cards).filter((c) => Number((c as HTMLElement).dataset.index) < 2);
+  const rest   = Array.from(cards).filter((c) => Number((c as HTMLElement).dataset.index) >= 2);
+
+  // First 2: animate in when section enters viewport
+  gsap.from(first2, {
+    y: 40,
+    opacity: 0,
+    duration: 0.7,
+    stagger: 0.14,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: '#blogs',
+      start: 'top 78%',
+    },
+  });
+
+  // 3rd+: hidden until scrolled further
+  if (rest.length > 0) {
+    gsap.set(rest, { opacity: 0, y: 40 });
+    gsap.to(rest, {
+      opacity: 1,
+      y: 0,
+      duration: 0.7,
+      stagger: 0.14,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: '#blogs',
+        start: 'top 40%',
+      },
+    });
+  }
+</script>

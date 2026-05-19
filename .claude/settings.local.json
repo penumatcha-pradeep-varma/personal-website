@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /Users/pradeep -name \"Pradeep_Resume*\" -o -name \"*.pdf\" 2>/dev/null | head -10)",
+      "Read(//Users/pradeep/**)",
+      "Bash(mkdir -p /Users/pradeep/personal_website/public/images)",
+      "Bash(cp /Users/pradeep/job-agent/resumes/Pradeep_Resume_Singapore.docx /Users/pradeep/personal_website/public/)"
+    ]
+  }
+}

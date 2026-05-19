@@ -1,0 +1,188 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const facts = [
+  { label: 'Based in', value: 'Hyderabad, India' },
+  { label: 'Current role', value: 'Senior Data Engineer at JPMorgan Chase' },
+  { label: 'Experience', value: '11+ years in Data Engineering' },
+  { label: 'Education', value: 'B.Tech, Computer Science — Andhra Pradesh' },
+  { label: 'Certified', value: 'HashiCorp Terraform Associate' },
+  { label: 'LinkedIn', value: 'linkedin.com/in/pradeep-varma-p' },
+];
+
+const values = [
+  {
+    icon: '🎯',
+    title: 'Scale-First Thinking',
+    desc: "I don't build for today's data volume. I architect for tomorrow's.",
+  },
+  {
+    icon: '🔬',
+    title: 'Data Quality First',
+    desc: 'Good ML starts with trustworthy data. I build quality gates, not afterthoughts.',
+  },
+  {
+    icon: '⚙️',
+    title: 'Automation Always',
+    desc: 'If you do it twice, automate it. Terraform, Airflow, CI/CD — zero manual drift.',
+  },
+  {
+    icon: '🤝',
+    title: 'Cross-Functional Collaboration',
+    desc: 'I bridge Data Scientists, Analysts, and Platform teams — translating requirements into pipelines.',
+  },
+];
+---
+
+<BaseLayout
+  title="About Me"
+  description="Pradeep Varma Penumatcha — Senior Data Engineer with 11+ years experience at JPMorgan Chase and Bank of America."
+>
+  <main class="min-h-screen pt-28 pb-20 px-6 max-w-6xl mx-auto">
+    <!-- Page header -->
+    <div class="mb-14">
+      <p class="section-label mb-3">The Person Behind the Data</p>
+      <h1 class="section-title text-4xl md:text-5xl mb-2">About Me</h1>
+      <div class="glow-line mt-6"></div>
+    </div>
+
+    <!-- Main split: photo + bio -->
+    <div class="grid md:grid-cols-5 gap-12 mb-20 items-start">
+      <!-- Photo -->
+      <div class="md:col-span-2" data-about-photo>
+        <div class="relative">
+          <div class="absolute -inset-1 rounded-2xl bg-gradient-to-br from-primary/30 to-accent/30 blur-sm"></div>
+          <img
+            src="/images/IMG_9904.PNG"
+            alt="Pradeep Varma Penumatcha"
+            class="relative w-full rounded-2xl object-cover object-top aspect-[3/4]"
+            loading="eager"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+          />
+          <!-- Fallback placeholder if image not yet added -->
+          <div
+            class="relative w-full rounded-2xl aspect-[3/4] bg-dark-surface border border-dark-border items-center justify-center flex-col gap-3 text-center p-6"
+            style="display:none"
+          >
+            <div class="text-5xl">👨‍💻</div>
+            <p class="text-muted text-sm font-mono">Add your photo to<br />/public/images/pradeep-hero.jpg</p>
+          </div>
+        </div>
+
+        <!-- Quick facts -->
+        <div class="card p-5 mt-5 space-y-3">
+          {
+            facts.map((f) => (
+              <div class="flex flex-col">
+                <span class="font-mono text-xs text-muted/60 uppercase tracking-wider">{f.label}</span>
+                <span class="text-light text-sm font-medium">{f.value}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Bio -->
+      <div class="md:col-span-3 space-y-6" data-about-bio>
+        <div>
+          <h2 class="font-display font-bold text-2xl text-light mb-4">
+            Hi, I'm Pradeep
+          </h2>
+          <div class="space-y-4 text-muted leading-relaxed">
+            <p>
+              I'm a Senior Data Engineer with over 11 years of experience building the infrastructure that turns raw data into business value. Currently at <span class="text-light font-medium">JPMorgan Chase & Co.</span>, where I architect PySpark pipelines processing multi-terabyte daily datasets and help power ML-ready feature stores for Data Science teams.
+            </p>
+            <p>
+              My career spans two of the most demanding domains in data engineering — <span class="text-primary">banking</span> and <span class="text-primary">telecom</span>. At Bank of America, I built regulatory analytics pipelines handling financial data at scale. Before that, at Tech Mahindra, I delivered sub-second latency real-time systems for network operations. Every role has sharpened my instinct for building things that <em>work</em> at scale and <em>keep</em> working.
+            </p>
+            <p>
+              I specialize in the full spectrum — from streaming ingestion with Kafka, through distributed transformation with PySpark/Spark Scala, to serving ML-ready data in Delta Lake on Databricks. I'm also a <span class="text-primary font-medium">HashiCorp Terraform Certified</span> engineer, which means I build the infrastructure that runs my pipelines, not just the pipelines themselves.
+            </p>
+            <p>
+              Outside of data engineering, I enjoy exploring new places on my bike and writing about what I learn — both technical and personal. You'll find both sides of me on this site.
+            </p>
+          </div>
+        </div>
+
+        <!-- Key achievements -->
+        <div class="card p-6 border-l-2 border-l-primary">
+          <p class="font-mono text-xs text-primary uppercase tracking-wider mb-4">Key Achievements</p>
+          <ul class="space-y-3">
+            {[
+              'Reduced multi-TB daily ETL runtimes at JPMorgan via Spark partitioning & shuffle optimization.',
+              'Architected Delta Lake medallion lakehouse on Databricks — enabling reliable, versioned ML workloads.',
+              'Automated AWS infrastructure with Terraform — eliminated manual configuration drift across all environments.',
+              'Migrated enterprise RDBMS to Hadoop/Spark at Bank of America — enabled scalable regulatory reporting.',
+            ].map((a) => (
+              <li class="flex gap-3 text-muted text-sm">
+                <span class="text-primary shrink-0 mt-0.5">▸</span>
+                <span>{a}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- CTA -->
+        <div class="flex flex-wrap gap-4 pt-2">
+          <a href="/experience" class="btn-primary">View Full Experience</a>
+          <a
+            href="/Pradeep_Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-outline"
+          >
+            Download Resume ↗
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Values -->
+    <section>
+      <div class="text-center mb-10">
+        <p class="section-label mb-2">How I Work</p>
+        <h2 class="section-title text-2xl md:text-3xl">Engineering Values</h2>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-5">
+        {
+          values.map((v, i) => (
+            <div class="card p-6" data-value>
+              <div class="text-2xl mb-3">{v.icon}</div>
+              <h3 class="font-display font-semibold text-light text-lg mb-2">{v.title}</h3>
+              <p class="text-muted text-sm leading-relaxed">{v.desc}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  import { gsap, ScrollTrigger } from '@/lib/gsap';
+
+  gsap.from('[data-about-photo]', {
+    x: -40,
+    opacity: 0,
+    duration: 0.8,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '[data-about-photo]', start: 'top 85%' },
+  });
+
+  gsap.from('[data-about-bio]', {
+    x: 40,
+    opacity: 0,
+    duration: 0.8,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '[data-about-bio]', start: 'top 85%' },
+  });
+
+  gsap.from('[data-value]', {
+    y: 30,
+    opacity: 0,
+    duration: 0.6,
+    stagger: 0.1,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '[data-value]', start: 'top 85%' },
+  });
+</script>

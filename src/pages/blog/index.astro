@@ -1,0 +1,94 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('personal-blog'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout
+  title="Personal Blog"
+  description="Technical writing on Data Engineering, Spark, AWS, Databricks, and the craft of building data systems at scale."
+>
+  <main class="min-h-screen pt-28 pb-20 px-6 max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-14">
+      <p class="section-label mb-3">Technical Writing</p>
+      <h1 class="section-title text-4xl md:text-5xl mb-4">Personal Blog</h1>
+      <p class="text-muted text-lg max-w-2xl">
+        Deep dives into Data Engineering — Spark internals, AWS architecture, Databricks patterns, and lessons from building at scale.
+      </p>
+      <div class="glow-line mt-6"></div>
+    </div>
+
+    <!-- Posts -->
+    {
+      posts.length === 0 ? (
+        <div class="card p-12 text-center">
+          <div class="text-4xl mb-4">📝</div>
+          <h2 class="font-display font-semibold text-light text-xl mb-2">Coming Soon</h2>
+          <p class="text-muted text-sm">
+            Technical posts are on the way. Add MDX files to{' '}
+            <code class="font-mono text-primary text-xs bg-dark-surface px-1.5 py-0.5 rounded">
+              src/content/personal-blog/
+            </code>
+          </p>
+        </div>
+      ) : (
+        <div class="space-y-6">
+          {posts.map((post, i) => (
+            <a
+              href={`/blog/${post.slug}`}
+              class="card p-7 flex flex-col md:flex-row gap-6 hover:border-primary/30 transition-all duration-300 group block"
+              data-post
+            >
+              {post.data.heroImage && (
+                <img
+                  src={post.data.heroImage}
+                  alt={post.data.title}
+                  class="w-full md:w-40 h-32 object-cover rounded-lg shrink-0"
+                />
+              )}
+              <div class="flex flex-col justify-between">
+                <div>
+                  <div class="flex flex-wrap gap-2 mb-3">
+                    {post.data.tags.slice(0, 3).map((tag) => (
+                      <span class="tag text-xs">{tag}</span>
+                    ))}
+                  </div>
+                  <h2 class="font-display font-semibold text-xl text-light group-hover:text-primary transition-colors mb-2">
+                    {post.data.title}
+                  </h2>
+                  <p class="text-muted text-sm leading-relaxed">{post.data.description}</p>
+                </div>
+                <div class="flex items-center gap-3 mt-4 text-xs text-muted/60 font-mono">
+                  <time datetime={post.data.pubDate.toISOString()}>
+                    {post.data.pubDate.toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </time>
+                  <span class="text-primary/40">→</span>
+                  <span class="text-primary group-hover:text-primary/80 text-xs font-medium">Read more</span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </main>
+</BaseLayout>
+
+<script>
+  import { gsap } from '@/lib/gsap';
+  gsap.from('[data-post]', {
+    y: 30,
+    opacity: 0,
+    duration: 0.6,
+    stagger: 0.1,
+    ease: 'power3.out',
+  });
+</script>

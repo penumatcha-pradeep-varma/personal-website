@@ -1,0 +1,89 @@
+---
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('personal-blog', ({ data }) => !data.draft);
+const posts = allPosts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+---
+
+<section id="blog" class="py-24 px-6 bg-dark-surface/30">
+  <div class="max-w-5xl mx-auto">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-14">
+      <div>
+        <p class="section-label mb-3">Technical Writing</p>
+        <h2 class="section-title text-4xl md:text-5xl">Personal Blog</h2>
+      </div>
+      <a href="/blog" class="btn-outline self-start">All Articles →</a>
+    </div>
+
+    {posts.length === 0 ? (
+      <!-- Empty state placeholder -->
+      <div class="grid md:grid-cols-3 gap-6">
+        {[
+          { title: 'Spark Optimization Deep Dive', desc: 'Partitioning strategies, broadcast joins, and shuffle tuning for multi-TB workloads.', tags: ['PySpark', 'Performance'] },
+          { title: 'Delta Lake Medallion Architecture', desc: 'How I structure Bronze/Silver/Gold layers for reliable ML-ready data at JPMorgan.', tags: ['Databricks', 'Delta Lake'] },
+          { title: 'Terraform for Data Engineers', desc: 'Standing up AWS EMR clusters and Glue jobs with reproducible IaC patterns.', tags: ['Terraform', 'AWS'] },
+        ].map((p) => (
+          <article class="card p-6 hover:border-primary/30 transition-colors duration-300 group" data-blog-card>
+            <div class="flex flex-wrap gap-2 mb-4">
+              {p.tags.map((t) => <span class="tag text-xs">{t}</span>)}
+            </div>
+            <h3 class="font-display font-semibold text-lg text-light mb-3 group-hover:text-primary transition-colors leading-snug">
+              {p.title}
+            </h3>
+            <p class="text-muted text-sm leading-relaxed">{p.desc}</p>
+            <div class="mt-4 text-xs font-mono text-primary/60">Coming soon →</div>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <div class="grid md:grid-cols-3 gap-6">
+        {posts.map((post) => (
+          <a href={`/blog/${post.slug}`} class="block group" data-blog-card>
+            <article class="card p-6 hover:border-primary/30 transition-colors duration-300 h-full flex flex-col">
+              {post.data.heroImage && (
+                <img
+                  src={post.data.heroImage}
+                  alt={post.data.title}
+                  class="w-full h-40 object-cover rounded-lg mb-4"
+                  loading="lazy"
+                />
+              )}
+              <div class="flex flex-wrap gap-2 mb-4">
+                {post.data.tags.slice(0, 2).map((t) => <span class="tag text-xs">{t}</span>)}
+              </div>
+              <h3 class="font-display font-semibold text-lg text-light mb-3 group-hover:text-primary transition-colors leading-snug flex-1">
+                {post.data.title}
+              </h3>
+              <p class="text-muted text-sm leading-relaxed line-clamp-3">{post.data.description}</p>
+              <div class="mt-4 flex items-center justify-between">
+                <time class="text-xs font-mono text-muted/60">
+                  {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                </time>
+                <span class="text-xs font-mono text-primary group-hover:translate-x-1 transition-transform">Read →</span>
+              </div>
+            </article>
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
+<script>
+  import { gsap, ScrollTrigger } from '@/lib/gsap';
+
+  gsap.from('[data-blog-card]', {
+    y: 40,
+    opacity: 0,
+    duration: 0.7,
+    stagger: 0.12,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: '#blog',
+      start: 'top 75%',
+    },
+  });
+</script>

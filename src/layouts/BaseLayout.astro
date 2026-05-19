@@ -1,0 +1,82 @@
+---
+import Navbar from '@/components/ui/Navbar.astro';
+import Footer from '@/components/ui/Footer.astro';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title,
+  description = 'Senior Data Engineer with 11+ years building enterprise data platforms. PySpark · AWS · Databricks · Kafka · Terraform.',
+  image = '/images/og-default.jpg',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://pradeeppenumatcha.vercel.app');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Pradeep Varma P | Portfolio" />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/png" href="/images/logo.png" />
+    <link rel="canonical" href={canonicalURL} />
+    <title>Pradeep Varma P | Portfolio</title>
+
+    <!-- Fonts: preconnect first, then load -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-dark text-light antialiased overflow-x-hidden">
+    <Navbar />
+
+    <div id="smooth-wrapper">
+      <div id="smooth-content">
+        <slot />
+        <Footer />
+      </div>
+    </div>
+
+    <script>
+      import { gsap, ScrollTrigger, ScrollSmoother } from '@/lib/gsap';
+
+      ScrollSmoother.create({
+        wrapper: '#smooth-wrapper',
+        content: '#smooth-content',
+        smooth: 1.5,
+        effects: true,
+        smoothTouch: 0.1,
+      });
+
+      // Navbar scroll effect: add background when scrolled
+      const navbar = document.getElementById('navbar');
+      ScrollTrigger.create({
+        start: 'top -80',
+        onUpdate: (self) => {
+          if (navbar) {
+            navbar.classList.toggle('nav-scrolled', self.progress > 0);
+          }
+        },
+      });
+    </script>
+  </body>
+</html>

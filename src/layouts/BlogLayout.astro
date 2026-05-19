@@ -1,0 +1,105 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  heroImage?: string;
+  tags?: string[];
+  location?: string;
+  readingTime?: number;
+}
+
+const { title, description, pubDate, updatedDate, heroImage, tags = [], location, readingTime } = Astro.props;
+
+const formattedPubDate = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={title} description={description} image={heroImage}>
+  <article class="min-h-screen pt-24 pb-20">
+    <!-- Hero image -->
+    {
+      heroImage && (
+        <div class="w-full h-64 md:h-96 overflow-hidden mb-0">
+          <img
+            src={heroImage}
+            alt={title}
+            class="w-full h-full object-cover"
+          />
+        </div>
+      )
+    }
+
+    <div class="max-w-3xl mx-auto px-6">
+      <!-- Back link -->
+      <div class="py-8">
+        <a
+          href="javascript:history.back()"
+          class="inline-flex items-center gap-2 text-muted hover:text-primary text-sm font-mono transition-colors"
+        >
+          ← Back
+        </a>
+      </div>
+
+      <!-- Meta -->
+      <header class="mb-10">
+        {
+          location && (
+            <div class="flex items-center gap-2 text-accent font-mono text-sm mb-4">
+              <span>📍</span>
+              <span>{location}</span>
+            </div>
+          )
+        }
+
+        <h1 class="font-display font-bold text-3xl md:text-5xl text-light mb-6 leading-tight">
+          {title}
+        </h1>
+
+        <p class="text-muted text-lg mb-6">{description}</p>
+
+        <div class="flex flex-wrap items-center gap-4 text-sm text-muted border-b border-dark-border pb-6">
+          <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
+          {readingTime && <span>· {readingTime} min read</span>}
+          {updatedDate && <span class="text-xs">Updated: {formattedUpdatedDate}</span>}
+        </div>
+
+        {
+          tags.length > 0 && (
+            <div class="flex flex-wrap gap-2 mt-4">
+              {tags.map((tag) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </div>
+          )
+        }
+      </header>
+
+      <!-- Content -->
+      <div class="prose prose-invert prose-lg max-w-none
+        prose-headings:font-display prose-headings:text-light
+        prose-p:text-muted prose-p:leading-relaxed
+        prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+        prose-code:text-primary prose-code:bg-dark-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
+        prose-pre:bg-dark-surface prose-pre:border prose-pre:border-dark-border
+        prose-blockquote:border-l-primary prose-blockquote:text-muted
+        prose-strong:text-light
+        prose-hr:border-dark-border
+      ">
+        <slot />
+      </div>
+    </div>
+  </article>
+</BaseLayout>

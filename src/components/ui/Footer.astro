@@ -1,0 +1,41 @@
+---
+const year = new Date().getFullYear();
+const links = [
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/pradeep-varma-p/' },
+  { label: 'GitHub', href: 'https://github.com/pradeeppenumatcha' },
+  { label: 'Email', href: 'mailto:pradeep.penumatcha@outlook.com' },
+];
+---
+
+<footer class="border-t border-dark-border mt-20">
+  <div class="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+    <!-- Brand -->
+    <div>
+      <p class="font-display font-bold text-lg text-light">
+        PVP<span class="text-primary">.</span>
+      </p>
+      <p class="text-muted text-sm mt-1">Senior Data Engineer · Hyderabad, India</p>
+    </div>
+
+    <!-- Links -->
+    <div class="flex items-center gap-6">
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            target={link.href.startsWith('http') ? '_blank' : undefined}
+            rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            class="text-muted hover:text-primary text-sm font-medium transition-colors"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+
+    <!-- Copy -->
+    <p class="text-muted text-xs font-mono">
+      © {year} Pradeep Varma Penumatcha
+    </p>
+  </div>
+</footer>

@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base ─────────────────────────────────────────── */
+@layer base {
+  :root {
+    --color-bg: #0a0a0f;
+    --color-surface: #0f0f1a;
+    --color-border: #1e1e3a;
+    --color-primary: #00d4ff;
+    --color-accent: #7c3aed;
+    --color-text: #e2e8f0;
+    --color-muted: #94a3b8;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Inter', system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-primary);
+    color: #000;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 212, 255, 0.4);
+    border-radius: 99px;
+  }
+}
+
+/* ─── ScrollSmoother wrapper ───────────────────────── */
+#smooth-wrapper {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+#smooth-content {
+  overflow: visible;
+  width: 100%;
+  will-change: transform;
+}
+
+/* ─── Components ────────────────────────────────────── */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-7 py-3 bg-primary text-black font-semibold text-sm rounded-lg transition-all duration-200;
+  }
+  .btn-primary:hover {
+    @apply -translate-y-0.5;
+    box-shadow: 0 0 28px rgba(0, 212, 255, 0.35);
+    background-color: #00bce6;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-7 py-3 border border-primary text-primary font-semibold text-sm rounded-lg transition-all duration-200;
+  }
+  .btn-outline:hover {
+    @apply -translate-y-0.5 bg-primary/10;
+  }
+
+  .card {
+    @apply bg-dark-surface border border-dark-border rounded-xl;
+  }
+
+  .tag {
+    @apply inline-flex items-center px-3 py-1 text-xs font-mono text-primary border border-primary/20 rounded-full;
+    background-color: rgba(0, 212, 255, 0.08);
+  }
+
+  .tag-purple {
+    @apply inline-flex items-center px-3 py-1 text-xs font-mono text-accent border border-accent/20 rounded-full;
+    background-color: rgba(124, 58, 237, 0.08);
+  }
+
+  .section-label {
+    @apply font-mono text-xs tracking-widest uppercase text-primary;
+  }
+
+  .section-title {
+    @apply font-display font-bold text-3xl md:text-4xl text-light;
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-line {
+    @apply h-px w-full;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  }
+}
+
+/* ─── Animations ────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ─── Timeline ──────────────────────────────────────── */
+.timeline-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--color-primary), transparent);
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -5px;
+  top: 28px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 12px var(--color-primary);
+}

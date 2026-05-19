@@ -1,0 +1,259 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import postsRaw from '@/data/posts.json';
+import config from '@/data/blogsConfig.json';
+
+const posts = [...postsRaw].sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf());
+const { banner } = config;
+---
+
+<BaseLayout
+  title="Blogs"
+  description="Life beyond data: travels, bike rides, adventures, and everything that makes the journey interesting."
+>
+
+  <!-- ── Banner Hero ──────────────────────────────────────────────── -->
+  <div id="blogs-banner" class="relative w-full overflow-hidden" style="height: 88vh; min-height: 520px;">
+
+    <!-- Background image -->
+    <img
+      id="blogs-hero-img"
+      src={`/images/${banner.image}`}
+      alt={banner.name}
+      class="absolute inset-0 w-full h-full object-cover will-change-transform select-none"
+      style="object-position: center center; transform: scale(1.08);"
+      draggable="false"
+    />
+
+    <!-- Gradient overlays -->
+    <div class="absolute inset-0 pointer-events-none"
+      style="background: linear-gradient(to bottom, rgba(10,10,15,0.6) 0%, rgba(10,10,15,0.1) 30%, rgba(10,10,15,0.1) 60%, rgba(10,10,15,0.85) 88%, #0a0a0f 100%);">
+    </div>
+    <!-- Radial dark vignette behind text -->
+    <div class="absolute inset-0 pointer-events-none"
+      style="background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(10,10,15,0.72) 0%, transparent 100%);">
+    </div>
+
+    <!-- Particle canvas -->
+    <canvas id="blogs-particles" class="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true" style="opacity: 0.3;"></canvas>
+
+    <!-- Center content -->
+    <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+
+      <!-- Eyebrow -->
+      <div id="bh-eyebrow" class="flex items-center gap-4 mb-6">
+        <div class="h-px w-12" style="background: linear-gradient(90deg, transparent, #a78bfa);"></div>
+        <p class="font-mono text-xs tracking-widest uppercase" style="color: #c4b5fd; letter-spacing: 0.2em;">Adventures & Stories</p>
+        <div class="h-px w-12" style="background: linear-gradient(90deg, #a78bfa, transparent);"></div>
+      </div>
+
+      <!-- Main title -->
+      <h1
+        id="bh-title"
+        class="font-display font-black uppercase leading-none mb-6"
+        style="font-size: clamp(4.5rem, 14vw, 11rem); letter-spacing: -0.03em; background: linear-gradient(135deg, #ffffff 0%, #e2d9f3 50%, #c4b5fd 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 32px rgba(124,58,237,0.5)) drop-shadow(0 2px 8px rgba(0,0,0,0.8));"
+      >
+        {banner.name}
+      </h1>
+
+      <!-- Divider with glow -->
+      <div id="bh-divider" class="mb-8" style="width: 120px; height: 2px; background: linear-gradient(90deg, transparent, #7c3aed, #a78bfa, #7c3aed, transparent); border-radius: 2px; box-shadow: 0 0 12px rgba(124,58,237,0.6);"></div>
+
+      <!-- Stats -->
+      <div id="bh-stats" class="flex items-center gap-10 md:gap-16">
+        {banner.stats.map((stat) => (
+          <div class="flex flex-col items-center gap-1">
+            <span
+              class="font-display font-black"
+              style="font-size: clamp(1.8rem, 4.5vw, 3rem); background: linear-gradient(135deg, #ffffff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 16px rgba(167,139,250,0.5));"
+            >
+              {stat.value}
+            </span>
+            <span class="font-mono text-xs tracking-widest uppercase" style="color: rgba(196,181,253,0.7); letter-spacing: 0.15em;">
+              {stat.label}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <!-- Tagline -->
+      <p id="bh-tagline" class="mt-7 text-sm md:text-base font-sans max-w-sm" style="color: rgba(226,232,240,0.6); line-height: 1.6;">
+        {banner.tagline}
+      </p>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div id="bh-scroll" class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+      <span class="font-mono text-xs tracking-widest uppercase" style="color: rgba(226,232,240,0.3);">Scroll</span>
+      <div class="blogs-scroll-line w-px h-10" style="background: linear-gradient(to bottom, #7c3aed80, transparent);"></div>
+    </div>
+  </div>
+
+  <!-- ── Post grid ────────────────────────────────────────────────── -->
+  <main class="pb-20 px-6 max-w-6xl mx-auto">
+
+    <!-- Section label -->
+    <div class="flex items-center gap-4 mt-16 mb-10">
+      <div class="h-px flex-1" style="background: linear-gradient(90deg, transparent, #7c3aed40);"></div>
+      <p class="font-mono text-xs tracking-widest uppercase" style="color: #7c3aed;">All Stories · {posts.length} Posts</p>
+      <div class="h-px flex-1" style="background: linear-gradient(90deg, #7c3aed40, transparent);"></div>
+    </div>
+
+    <!-- 3-column grid -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {posts.map((post) => (
+        <a href={`/blogs/${post.slug}`} class="group block" data-post-card>
+          <article class="flex flex-col h-full rounded-2xl overflow-hidden border border-dark-border bg-dark-surface/40 hover:border-accent/30 transition-all duration-300 hover:-translate-y-1">
+
+            {post.heroImage ? (
+              <div class="overflow-hidden" style="aspect-ratio: 16/10;">
+                <img
+                  src={`/images/${post.heroImage}`}
+                  alt={post.title}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+            ) : (
+              <div class="flex items-center justify-center text-4xl" style="aspect-ratio: 16/10; background: linear-gradient(135deg, #7c3aed22, #0f0f1a);">
+                🏍️
+              </div>
+            )}
+
+            <div class="flex flex-col flex-1 p-5">
+              {post.location && (
+                <p class="font-mono text-xs mb-2" style="color: #7c3aed;">📍 {post.location}</p>
+              )}
+              <h2 class="font-display font-semibold text-base text-light mb-2 leading-snug group-hover:text-accent transition-colors line-clamp-2">
+                {post.title}
+              </h2>
+              <p class="text-muted text-sm leading-relaxed line-clamp-2 flex-1 mb-4">
+                {post.description}
+              </p>
+              <div class="flex items-center justify-between mt-auto">
+                <div class="flex flex-wrap gap-1.5">
+                  {post.tags.slice(0, 2).map((tag) => (
+                    <span class="font-mono text-xs px-2 py-0.5 rounded-full border" style="color: #7c3aed; border-color: #7c3aed40; background: #7c3aed0d;">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <time class="text-xs text-muted/50 font-mono">
+                  {new Date(post.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                </time>
+              </div>
+            </div>
+          </article>
+        </a>
+      ))}
+    </div>
+
+    <p class="text-center font-mono text-xs mt-16" style="color: rgba(226,232,240,0.2);">
+      Add posts to <code style="color: #7c3aed60;">src/data/posts.json</code> · Banner config in <code style="color: #7c3aed60;">src/data/blogsConfig.json</code>
+    </p>
+  </main>
+</BaseLayout>
+
+<style>
+  @keyframes scroll-pulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(1); }
+    50%       { opacity: 1;   transform: scaleY(0.8); }
+  }
+  .blogs-scroll-line {
+    animation: scroll-pulse 2s ease-in-out infinite;
+    transform-origin: top;
+  }
+</style>
+
+<script>
+  import { gsap, ScrollTrigger } from '@/lib/gsap';
+
+  // ── Particle canvas ───────────────────────────────────────────
+  const canvas = document.getElementById('blogs-particles') as HTMLCanvasElement | null;
+  if (canvas) {
+    const ctx = canvas.getContext('2d')!;
+    interface Particle { x: number; y: number; vx: number; vy: number; r: number; a: number }
+    const particles: Particle[] = [];
+    let rafId = 0;
+
+    const resize = () => { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; };
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    for (let i = 0; i < 45; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: (Math.random() - 0.5) * 0.22,
+        r: Math.random() * 1.2 + 0.3,
+        a: Math.random() * 0.22 + 0.05,
+      });
+    }
+
+    const draw = () => {
+      rafId = requestAnimationFrame(draw);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const p of particles) {
+        p.x = (p.x + p.vx + canvas.width)  % canvas.width;
+        p.y = (p.y + p.vy + canvas.height) % canvas.height;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(124,58,237,${p.a})`;
+        ctx.fill();
+      }
+    };
+    draw();
+
+    document.addEventListener('astro:before-swap', () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', resize);
+    });
+  }
+
+  // ── Set initial hidden states ──────────────────────────────────
+  gsap.set('#bh-eyebrow',  { opacity: 0, y: -16 });
+  gsap.set('#bh-title',    { opacity: 0, y: 60, scale: 0.94 });
+  gsap.set('#bh-divider',  { opacity: 0, scaleX: 0 });
+  gsap.set('#bh-stats',    { opacity: 0, y: 28 });
+  gsap.set('#bh-tagline',  { opacity: 0, y: 20 });
+  gsap.set('#bh-scroll',   { opacity: 0 });
+
+  // ── Image zoom-out on load ────────────────────────────────────
+  gsap.to('#blogs-hero-img', { scale: 1, duration: 2.4, ease: 'power2.out', delay: 0.05 });
+
+  // ── Entrance stagger ─────────────────────────────────────────
+  const tl = gsap.timeline({ delay: 0.2 });
+  tl.to('#bh-eyebrow', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' })
+    .to('#bh-title',   { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: 'power3.out' }, '-=0.35')
+    .to('#bh-divider', { opacity: 1, scaleX: 1, duration: 0.7, ease: 'power2.out', transformOrigin: 'center' }, '-=0.45')
+    .to('#bh-stats',   { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, '-=0.35')
+    .to('#bh-tagline', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.3')
+    .to('#bh-scroll',  { opacity: 1, duration: 0.5 }, '-=0.1');
+
+  // ── Parallax: image drifts on scroll ─────────────────────────
+  gsap.to('#blogs-hero-img', {
+    y: '12%', ease: 'none',
+    scrollTrigger: { trigger: '#blogs-banner', start: 'top top', end: 'bottom top', scrub: 0.8, immediateRender: false },
+  });
+
+  // ── Banner content lifts on scroll ───────────────────────────
+  gsap.to('#blogs-banner > div:nth-child(4)', {
+    y: '-6%', opacity: 0, ease: 'none',
+    scrollTrigger: { trigger: '#blogs-banner', start: 'top top', end: '55% top', scrub: 0.5, immediateRender: false },
+  });
+
+  // ── Post cards reveal ─────────────────────────────────────────
+  const cards = document.querySelectorAll('[data-post-card]');
+
+  gsap.from(Array.from(cards).slice(0, 3), {
+    y: 40, opacity: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out',
+    scrollTrigger: { trigger: '[data-post-card]', start: 'top 85%' },
+  });
+
+  if (cards.length > 3) {
+    gsap.from(Array.from(cards).slice(3), {
+      y: 40, opacity: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out',
+      scrollTrigger: { trigger: cards[3], start: 'top 85%' },
+    });
+  }
+</script>

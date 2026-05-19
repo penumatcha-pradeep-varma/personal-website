@@ -1,0 +1,20 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/sections/Hero.astro';
+import HomeHighlights from '@/components/sections/HomeHighlights.astro';
+import ExperienceSection from '@/components/sections/ExperienceSection.astro';
+import AboutSection from '@/components/sections/AboutSection.astro';
+import LifestyleBlogPreview from '@/components/sections/LifestyleBlogPreview.astro';
+---
+
+<BaseLayout
+  title="Pradeep Varma Penumatcha"
+  description="AI Data Engineer with 11+ years building enterprise data platforms. PySpark · AWS · Databricks · Kafka · Terraform."
+  image="/images/pradeep-hero.jpg"
+>
+  <Hero />
+  <HomeHighlights />
+  <ExperienceSection />
+  <AboutSection />
+  <LifestyleBlogPreview />
+</BaseLayout>

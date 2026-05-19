@@ -1,0 +1,47 @@
+# Build output
+dist/
+.output/
+.vercel/
+.netlify/
+
+# Dependencies
+node_modules/
+
+# Astro generated
+.astro/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*.local
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor
+.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Optional: comment out if you use these
+# .yarn/
+# .pnp.*

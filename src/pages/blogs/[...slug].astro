@@ -1,0 +1,153 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import posts from '@/data/posts.json';
+
+export function getStaticPaths() {
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+---
+
+<BaseLayout title={post.title} description={post.description} image={post.heroImage ? `/images/${post.heroImage}` : undefined}>
+  <article class="min-h-screen pb-24">
+
+    <!-- Hero image — positioned below navbar, auto-scaled -->
+    {post.heroImage && (
+      <div class="w-full relative" style="padding-top: 76px; background: #0a0a0f;">
+        <div class="w-full flex justify-center items-center" style="max-height: 68vh; overflow: hidden;">
+          <img
+            src={`/images/${post.heroImage}`}
+            alt={post.title}
+            style="width: 100%; height: auto; max-height: 68vh; object-fit: contain; display: block;"
+          />
+        </div>
+        <!-- Bottom fade into page -->
+        <div class="absolute bottom-0 left-0 right-0 h-20 pointer-events-none" style="background: linear-gradient(to top, #0a0a0f 0%, transparent 100%);"></div>
+      </div>
+    )}
+
+    <div class="max-w-3xl mx-auto px-6">
+
+      <!-- Back link -->
+      <div class="pt-8 pb-4">
+        <a href="/blogs" class="inline-flex items-center gap-2 text-muted hover:text-accent text-sm font-mono transition-colors">
+          ← All Stories
+        </a>
+      </div>
+
+      <!-- Post header -->
+      <header class="mb-12">
+        {post.location && (
+          <div class="flex items-center gap-2 font-mono text-sm mb-4" style="color: #7c3aed;">
+            <span>📍</span>
+            <span>{post.location}</span>
+          </div>
+        )}
+
+        <h1 class="font-display font-bold text-3xl md:text-5xl text-light mb-5 leading-tight">
+          {post.title}
+        </h1>
+
+        <p class="text-muted text-lg leading-relaxed mb-6">{post.description}</p>
+
+        <div class="flex flex-wrap items-center gap-4 text-sm text-muted border-b border-dark-border pb-6">
+          <time datetime={post.date}>
+            {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </time>
+          <span>·</span>
+          <span>{Math.ceil(post.sections.reduce((n, s) => n + s.paragraphs.join(' ').split(/\s+/).length, 0) / 200)} min read</span>
+        </div>
+
+        {post.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-4">
+            {post.tags.map((tag) => (
+              <span class="font-mono text-xs px-3 py-1 rounded-full border" style="color: #7c3aed; border-color: #7c3aed40; background: #7c3aed0d;">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </header>
+
+      <!-- Story sections -->
+      <div class="space-y-16">
+        {post.sections.map((section, i) => (
+          <section class="post-section" data-section={i}>
+
+            <!-- Section heading — styled like a day marker -->
+            <div class="flex items-center gap-4 mb-6">
+              <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-mono text-xs font-bold" style="background: #7c3aed22; border: 1px solid #7c3aed40; color: #7c3aed;">
+                {i + 1}
+              </div>
+              <h2 class="font-display font-bold text-xl md:text-2xl text-light">{section.heading}</h2>
+              <div class="flex-1 h-px" style="background: linear-gradient(to right, #7c3aed30, transparent);"></div>
+            </div>
+
+            <!-- Section image (if present) — auto-scaled -->
+            {section.image && (
+              <div class="mb-6 rounded-2xl overflow-hidden" style="background: #0f0f1a;">
+                <img
+                  src={`/images/${section.image}`}
+                  alt={section.heading}
+                  style="width: 100%; height: auto; max-height: 60vh; object-fit: contain; display: block; margin: 0 auto;"
+                />
+              </div>
+            )}
+
+            <!-- Paragraphs -->
+            <div class="space-y-4">
+              {section.paragraphs.map((para) => (
+                <p class="text-muted leading-relaxed text-base md:text-lg">{para}</p>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <!-- Footer nav -->
+      <div class="mt-20 pt-8 border-t border-dark-border flex items-center justify-between">
+        <a href="/blogs" class="inline-flex items-center gap-2 text-muted hover:text-accent text-sm font-mono transition-colors">
+          ← All Stories
+        </a>
+        <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" class="inline-flex items-center gap-2 text-muted hover:text-accent text-sm font-mono transition-colors">
+          Back to top ↑
+        </a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .post-section {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .post-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  // Reveal sections as user scrolls through the story
+  const sections = document.querySelectorAll('.post-section');
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
+  );
+
+  sections.forEach((s) => observer.observe(s));
+</script>
