@@ -4,7 +4,7 @@
     "tagline": "Adventures on two wheels — rides, routes, and real stories.",
     "image": "_MG_1170.jpg",
     "stats": [
-      { "value": "15KM",  "label": "Total Distance" },
+      { "value": "15000KM",  "label": "Total Distance" },
       { "value": "5",     "label": "Trips" }
     ]
   }
